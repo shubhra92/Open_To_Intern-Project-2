@@ -10,7 +10,7 @@ config()
 const port=(process.env.PORT||3000) , mongoDB_Url=process.env.mongoDB_Url 
 
 //CONNECT MongoDB
-mongoose.connect(mongoDB_Url).then(()=>console.log("Establish connection to the mongoDB has successful!"),(err)=>console.log(err))
+mongoose.connect(mongoDB_Url).then(()=>console.log("mongoDB connected!"),(err)=>console.log(err))
 
 app.use(express.json())
 //all Route

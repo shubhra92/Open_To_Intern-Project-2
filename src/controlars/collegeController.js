@@ -51,7 +51,7 @@ const createCollege = async function (req, res) {
             }
             if(i==="name"){
                 ((x)=>{let rgx=`^${x.split("").map(a=>a+"[a-z]{1,}").join("( [a-z]{1,3})? ")}$`;
-                colValidSchema.fullName.regex=[new RegExp(rgx),`${collegeData["fullName"]} is not fullName of ${collegeData[i]}`]
+                colValidSchema.fullName.regex=[new RegExp(rgx,'i'),`${collegeData["fullName"]} is not fullName of ${collegeData[i]}`]
             })(collegeData[i])
                 }
             filter[i] = collegeData[i]
@@ -68,8 +68,8 @@ const createCollege = async function (req, res) {
 
 
         let docData=await collegeModel.create(filter)
-
-        res.status(201).send({status:true,message:"College document creation successful! 😁👍🎊🎉",Document:docData})
+        const {_id,name,fullName,logoLink}=docData
+        res.status(201).send({status:true,message:"College document creation successful! 😁👍🎊🎉",Document:{name,fullName,logoLink,_id}})
 
 
     } catch (err) {
@@ -85,9 +85,9 @@ try{
     if(!isValid(collegeName))return res.status(400).send({status:false,message:"college searching possible by collegeName"})
     if(!/^[a-zA-Z]{3,}$/.test(`${collegeName}`))return res.status(400).send({status:false,message:"plz enter valid college name"})
     collegeName=collegeName.toLowerCase()
-    const collegeDoc=await collegeModel.findOne({"name":`${collegeName}`,isDeleted:false}).lean()
+    const collegeDoc=await collegeModel.findOne({"name":`${collegeName}`,isDeleted:false}).select({"isDeleted":0,"__v":0,"updatedAt":0,"createdAt":0}).lean()
     if(!collegeDoc)return res.status(400).send({status:false,message:"no college found with this name "+collegeName+" 👽😢"})
-    let allLinkedInternsDoc=await internModel.find({collegeId:collegeDoc._id,isDeleted:false})
+    let allLinkedInternsDoc=await internModel.find({collegeId:collegeDoc._id,isDeleted:false}).select({isDeleted:0,createdAt:0,updatedAt:0,__v:0})
     let k=allLinkedInternsDoc.length
     if(!k)allLinkedInternsDoc="no intern"
     else {allLinkedInternsDoc={NumberOfInter:k,Documents:allLinkedInternsDoc}}

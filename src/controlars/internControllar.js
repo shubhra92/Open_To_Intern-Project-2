@@ -1,4 +1,3 @@
-const { isValidObjectId } = require("mongoose")
 const internModel=require("../model/internModel")
 const {isValid}=require('../validation/valid')
 const collegeModel=require('../model/collegeModel')
@@ -26,7 +25,6 @@ try{
             type:Number,
             required:"mobile number required",
             unique:" this mobile number already exist",
-            Trim:true,
             regex:[/^[6-9][0-9]{9}$/,"enter valid indian mobile number"]
         }, 
         collegeName: {
@@ -76,7 +74,8 @@ try{
     }
 
     const internDoc=await internModel.create(filter)
-res.status(201).send({status:true,message:"Intern creation has successful!🎉🎊😁👍",internDocument:internDoc})
+    const {_id,name,email,mobile,collegeId}=internDoc
+res.status(201).send({status:true,message:"Intern creation has successful!🎉🎊😁👍",internDocument:{_id,name,email,mobile,collegeId}})
 }catch(err){
     res.status(500).send({status:false,message:err.message})
 }
